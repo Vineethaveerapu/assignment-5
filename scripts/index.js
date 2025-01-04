@@ -15,70 +15,104 @@ const gameImageCount = 6;
 const defaultImage = "pink-question-mark.png";
 
 let hasFlippedCard = false;
+let lockBoard = false;
 let firstCard, secondCard;
+let matchedPairs = 0;
 
 function flipCard() {
-  this.classList.toggle("card-flipped");
+  // if the card is locked or the same card is clicked twice, return
+  if (lockBoard || $(this).is(firstCard)) return;
 
+  // toggle the card class
+  $(this).toggleClass("card-flipped");
+
+  // if the first card is not flipped, flip it
   if (!hasFlippedCard) {
-    // first click
-    hasFlippedCard = true;
     firstCard = this;
-  } else {
-    // second click
-    hasFlippedCard = false;
-    secondCard = this;
+    hasFlippedCard = true;
+    return;
+  }
 
-    if (firstCard.dataset.name === secondCard.dataset.name) {
-      // it's a match!
-      firstCard.removeEventListener("click", flipCard);
-      secondCard.removeEventListener("click", flipCard);
-      // add class as matched
-      firstCard.classList.add("matched");
-      secondCard.classList.add("matched");
-    } else {
-      // not a match
+  secondCard = this;
+  checkForMatch();
+}
+
+function checkForMatch() {
+  // lock the board to avoid third card click
+  lockBoard = true;
+  const isMatch = $(firstCard).data("name") === $(secondCard).data("name");
+
+  if (isMatch) {
+    disableCards();
+    matchedPairs++;
+
+    if (matchedPairs === gameImageCount) {
       setTimeout(() => {
-        $(".card-flipped:not(.matched)").removeClass("card-flipped");
-      }, 1000);
+        if (confirm("Congratulations! Play again?")) {
+          resetGame();
+        }
+      }, 500);
     }
+  } else {
+    unflipCards();
   }
 }
 
-function createGameBoard() {
-  const gameBoard = document.querySelector(".game-board");
+function disableCards() {
+  $(firstCard).off("click", flipCard).addClass("matched");
+  $(secondCard).off("click", flipCard).addClass("matched");
+  resetBoard();
+}
 
-  // shuffle the imagesCollection array and create card images with six pairs (12 total)
-  const shuffledImages = imagesCollection.sort(() => Math.random() - 0.5);
-  const sixImages = shuffledImages.slice(0, gameImageCount);
-  const cardImages = [...sixImages, ...sixImages].sort(
+function unflipCards() {
+  setTimeout(() => {
+    $(".card-flipped:not(.matched)").removeClass("card-flipped");
+    resetBoard();
+  }, 1000);
+}
+
+function resetBoard() {
+  hasFlippedCard = false;
+  lockBoard = false;
+  firstCard = null;
+  secondCard = null;
+}
+
+function resetGame() {
+  matchedPairs = 0;
+  $(".game-board").empty();
+  createGameBoard();
+}
+
+function createGameBoard() {
+  const $gameBoard = $(".game-board");
+  const shuffledImages = [...imagesCollection]
+    .sort(() => Math.random() - 0.5)
+    .slice(0, gameImageCount);
+  const cardImages = [...shuffledImages, ...shuffledImages].sort(
     () => Math.random() - 0.5
   );
 
   cardImages.forEach((card) => {
-    const cardElement = document.createElement("div");
-    cardElement.classList.add("card");
-    cardElement.dataset.name = card;
-
-    // create the card image
-    const frontImg = document.createElement("img");
-    frontImg.classList.add("card-image", "front");
-    frontImg.src = `${imagesPath}/${defaultImage}`;
-    cardElement.appendChild(frontImg);
-
-    // create the card back
-    const backImg = document.createElement("img");
-    backImg.classList.add("card-image", "back");
-    backImg.src = `${imagesPath}/${card}`;
-    cardElement.appendChild(backImg);
-
-    gameBoard.appendChild(cardElement);
-
-    // add event listener to the game board
-    $(cardElement).on("click", flipCard);
+    $("<div>", {
+      class: "card",
+      "data-name": card
+    })
+      .append(
+        $("<img>", {
+          class: "card-image front",
+          src: `${imagesPath}/${defaultImage}`
+        }),
+        $("<img>", {
+          class: "card-image back",
+          src: `${imagesPath}/${card}`
+        })
+      )
+      .on("click", flipCard)
+      .appendTo($gameBoard);
   });
 }
 
-document.addEventListener("DOMContentLoaded", () => {
+$(document).ready(() => {
   createGameBoard();
 });
