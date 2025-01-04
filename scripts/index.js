@@ -13,20 +13,20 @@ const imagesCollection = [
 ];
 const gameImageCount = 6;
 const defaultImage = "pink-question-mark.png";
+const maxTurns = Math.floor(gameImageCount * 1.9);
 
 let hasFlippedCard = false;
 let lockBoard = false;
 let firstCard, secondCard;
 let matchedPairs = 0;
+let turns = 0;
 
 function flipCard() {
-  // if the card is locked or the same card is clicked twice, return
-  if (lockBoard || $(this).is(firstCard)) return;
+  const isGameOver = matchedPairs === gameImageCount || turns >= maxTurns;
+  if (lockBoard || $(this).is(firstCard) || isGameOver) return;
 
-  // toggle the card class
   $(this).toggleClass("card-flipped");
 
-  // if the first card is not flipped, flip it
   if (!hasFlippedCard) {
     firstCard = this;
     hasFlippedCard = true;
@@ -34,28 +34,62 @@ function flipCard() {
   }
 
   secondCard = this;
+  turns++;
+  updateTurnMessage();
   checkForMatch();
 }
 
 function checkForMatch() {
-  // lock the board to avoid third card click
   lockBoard = true;
   const isMatch = $(firstCard).data("name") === $(secondCard).data("name");
 
   if (isMatch) {
     disableCards();
     matchedPairs++;
-
-    if (matchedPairs === gameImageCount) {
-      setTimeout(() => {
-        if (confirm("Congratulations! Play again?")) {
-          resetGame();
-        }
-      }, 500);
-    }
+    checkGameEnd();
   } else {
     unflipCards();
+    checkGameEnd();
   }
+}
+
+function checkGameEnd() {
+  if (matchedPairs === gameImageCount) {
+    setTimeout(() => {
+      updateGameMessage(`🎉 Congratulations! You won in ${turns} turns!`);
+      showNewGamePrompt();
+    }, 500);
+  } else if (turns >= maxTurns) {
+    setTimeout(() => {
+      updateGameMessage(
+        `Game Over! You ran out of turns. Found ${matchedPairs} pairs.`
+      );
+      showNewGamePrompt();
+    }, 500);
+  } else {
+    updateGameMessage(
+      `Turns: ${turns}/${maxTurns} | Pairs found: ${matchedPairs}/${gameImageCount}`
+    );
+  }
+}
+
+function showNewGamePrompt() {
+  $(".replay-button").show().focus();
+}
+
+function resetGame() {
+  matchedPairs = 0;
+  turns = 0;
+  $(".game-board").empty();
+  updateGameMessage(`Turns: 0/${maxTurns} | Pairs found: 0/${gameImageCount}`);
+  $(".replay-button").hide();
+  createGameBoard();
+}
+
+function updateTurnMessage() {
+  updateGameMessage(
+    `Turns: ${turns}/${maxTurns} | Pairs found: ${matchedPairs}/${gameImageCount}`
+  );
 }
 
 function disableCards() {
@@ -76,12 +110,6 @@ function resetBoard() {
   lockBoard = false;
   firstCard = null;
   secondCard = null;
-}
-
-function resetGame() {
-  matchedPairs = 0;
-  $(".game-board").empty();
-  createGameBoard();
 }
 
 function createGameBoard() {
@@ -113,6 +141,19 @@ function createGameBoard() {
   });
 }
 
+function handleNewGameButton() {
+  $(".replay-button").on("click", () => {
+    resetGame();
+  });
+}
+
+function updateGameMessage(message) {
+  $(".game-message").text(message);
+}
+
 $(document).ready(() => {
   createGameBoard();
+  handleNewGameButton();
+  updateGameMessage(`Turns: 0/${maxTurns} | Pairs found: 0/${gameImageCount}`);
+  $(".replay-button").hide();
 });
