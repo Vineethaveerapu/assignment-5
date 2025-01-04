@@ -25,7 +25,7 @@ function flipCard() {
   const isGameOver = matchedPairs === gameImageCount || turns >= maxTurns;
   if (lockBoard || $(this).is(firstCard) || isGameOver) return;
 
-  $(this).toggleClass("card-flipped");
+  $(this).addClass("card-flipped");
 
   if (!hasFlippedCard) {
     firstCard = this;
@@ -56,39 +56,56 @@ function checkForMatch() {
 function checkGameEnd() {
   if (matchedPairs === gameImageCount) {
     setTimeout(() => {
-      updateGameMessage(`🎉 Congratulations! You won in ${turns} turns!`);
-      showNewGamePrompt();
+      updateGameMessage(
+        `<span>🎉 Congratulations! You won in ${turns} turns!</span>`
+      );
+      handleDialog();
     }, 500);
   } else if (turns >= maxTurns) {
     setTimeout(() => {
       updateGameMessage(
-        `Game Over! You ran out of turns. Found ${matchedPairs} pairs.`
+        `<span>Game Over! You ran out of turns. Found ${matchedPairs} pairs.</span>`
       );
-      showNewGamePrompt();
+      handleDialog();
     }, 500);
   } else {
     updateGameMessage(
-      `Turns: ${turns}/${maxTurns} | Pairs found: ${matchedPairs}/${gameImageCount}`
+      `<span>Turns: ${turns}/${maxTurns}</span> <span>Pairs found: ${matchedPairs}/${gameImageCount}</span>`
     );
   }
-}
-
-function showNewGamePrompt() {
-  $(".replay-button").show().focus();
 }
 
 function resetGame() {
   matchedPairs = 0;
   turns = 0;
   $(".game-board").empty();
-  updateGameMessage(`Turns: 0/${maxTurns} | Pairs found: 0/${gameImageCount}`);
-  $(".replay-button").hide();
+  updateGameMessage(
+    `<span>Turns: 0/${maxTurns}</span> <span>Pairs found: 0/${gameImageCount}</span>`
+  );
   createGameBoard();
+}
+
+function handleDialog() {
+  const dialog = document.getElementById("game-over-dialog");
+  dialog.showModal();
+
+  $(document).on("keydown", (event) => {
+    if (event.key === "Escape" && dialog.open) {
+      dialog.close();
+    }
+  });
+}
+
+function handleReplayButton() {
+  $(".replay-button").on("click", () => {
+    resetGame();
+    document.getElementById("game-over-dialog").close();
+  });
 }
 
 function updateTurnMessage() {
   updateGameMessage(
-    `Turns: ${turns}/${maxTurns} | Pairs found: ${matchedPairs}/${gameImageCount}`
+    `<span>Turns: ${turns}/${maxTurns}</span> <span>Pairs found: ${matchedPairs}/${gameImageCount}</span>`
   );
 }
 
@@ -100,7 +117,8 @@ function disableCards() {
 
 function unflipCards() {
   setTimeout(() => {
-    $(".card-flipped:not(.matched)").removeClass("card-flipped");
+    $(firstCard).removeClass("card-flipped");
+    $(secondCard).removeClass("card-flipped");
     resetBoard();
   }, 1000);
 }
@@ -141,19 +159,22 @@ function createGameBoard() {
   });
 }
 
-function handleNewGameButton() {
-  $(".replay-button").on("click", () => {
-    resetGame();
-  });
+function updateGameMessage(message) {
+  $(".game-message").html(message);
 }
 
-function updateGameMessage(message) {
-  $(".game-message").text(message);
+// eslint-disable-next-line no-unused-vars
+function openDialog() {
+  const dialog = document.getElementById("game-over-dialog");
+  dialog.showModal();
 }
 
 $(document).ready(() => {
   createGameBoard();
-  handleNewGameButton();
-  updateGameMessage(`Turns: 0/${maxTurns} | Pairs found: 0/${gameImageCount}`);
-  $(".replay-button").hide();
+  handleReplayButton();
+  updateGameMessage(
+    `<span>Turns: 0/${maxTurns}</span> <span>Pairs found: 0/${gameImageCount}</span>`
+  );
+
+  // openDialog();
 });
