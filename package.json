@@ -1,12 +1,12 @@
 {
   "name": "assignment-5",
   "version": "1.0.0",
-  "scripts": {
-    "start": "parcel index.html --open"
-  },
   "author": "Vineetha",
   "license": "ISC",
   "description": "Memory Game",
+  "scripts": {
+    "start": "parcel index.html --open"
+  },
   "dependencies": {
     "parcel": "latest",
     "prettier": "^3.4.2"
