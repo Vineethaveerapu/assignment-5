@@ -1,3 +1,4 @@
+const imagesPath = "../images";
 const imagesCollection = [
   "bouquet.png",
   "cake.png",
@@ -27,7 +28,7 @@ function createGameBoard() {
 
     const img = document.createElement("img");
     img.classList.add("card-image");
-    img.src = `./images/${card}`;
+    img.src = `${imagesPath}/${card}`;
     cardElement.appendChild(img);
 
     gameBoard.appendChild(cardElement);
