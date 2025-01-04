@@ -11,6 +11,10 @@ main {
   justify-content: center;
 }
 
+h1 {
+  text-align: center;
+}
+
 .game-container {
   max-width: 600px;
   margin: 50px auto;
