@@ -177,6 +177,7 @@ function openWelcomeDialog() {
   $("#pairs-left").text(gameImageCount);
   $("#start-button").on("click", () => {
     dialog.close();
+    $(".game-container").fadeIn(1500);
   });
 }
 
