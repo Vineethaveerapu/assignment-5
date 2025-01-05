@@ -1,4 +1,4 @@
-const imagesPath = "../images";
+const imagesPath = "./images";
 const imagesCollection = [
   "bouquet.png",
   "cake.png",
