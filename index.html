@@ -13,7 +13,20 @@
       <section class="game-container" style="display: none">
         <h1>Memory Game</h1>
         <div class="game-board"></div>
-        <div class="game-message"></div>
+        <div class="game-stats-button-container">
+          <div class="game-message"></div>
+          <div id="game-stats-button">
+            Game Stats <span id="game-stats-icon">🏆</span>
+          </div>
+        </div>
+        <dialog id="game-stats">
+          <p>Games Played: <span id="games-played">0</span></p>
+          <p>Wins: <span id="wins">0</span></p>
+          <p>Losses: <span id="losses">0</span></p>
+          <button type="button" onclick="this.closest('dialog').close()">
+            Close
+          </button>
+        </dialog>
       </section>
 
       <!-- Welcome Modal -->

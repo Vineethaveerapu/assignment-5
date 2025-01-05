@@ -112,7 +112,7 @@ button:hover {
   transform: scale(1.05);
 }
 
-.game-message {
+.game-stats-button-container {
   text-align: center;
   font-size: 1.2rem;
   margin-top: 2rem;
@@ -120,7 +120,19 @@ button:hover {
 
   display: flex;
   align-items: center;
-  justify-content: space-evenly;
+  justify-content: space-between;
+}
+
+.game-message {
+  display: flex;
+  gap: 1.5rem;
+}
+
+#game-stats-button {
+  cursor: pointer;
+  outline: 1px solid currentColor;
+  border-radius: 5px;
+  padding: 5px 10px;
 }
 
 h2 {

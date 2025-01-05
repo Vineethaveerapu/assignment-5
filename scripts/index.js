@@ -20,6 +20,28 @@ let lockBoard = false;
 let firstCard, secondCard;
 let matchedPairs = 0;
 let turns = 0;
+let gamePlayedCount = parseInt(sessionStorage.getItem("gamePlayedCount")) || 0;
+let gameWinCount = parseInt(sessionStorage.getItem("gameWinCount")) || 0;
+let gameLossCount = parseInt(sessionStorage.getItem("gameLossCount")) || 0;
+
+function updateGameStats() {
+  $("#games-played").text(gamePlayedCount);
+  $("#wins").text(gameWinCount);
+  $("#losses").text(gameLossCount);
+}
+
+function incrementGameStats() {
+  gamePlayedCount++;
+  if (matchedPairs === gameImageCount) {
+    gameWinCount++;
+  } else {
+    gameLossCount++;
+  }
+  sessionStorage.setItem("gamePlayedCount", gamePlayedCount);
+  sessionStorage.setItem("gameWinCount", gameWinCount);
+  sessionStorage.setItem("gameLossCount", gameLossCount);
+  updateGameStats();
+}
 
 function flipCard() {
   const isGameOver = matchedPairs === gameImageCount || turns >= maxTurns;
@@ -55,6 +77,7 @@ function checkForMatch() {
 
 function checkGameEnd() {
   if (matchedPairs === gameImageCount) {
+    incrementGameStats();
     setTimeout(() => {
       updateGameMessage(
         `<span>🎉 Congratulations! You won in ${turns} turns!</span>`
@@ -62,6 +85,7 @@ function checkGameEnd() {
       handleDialog();
     }, 500);
   } else if (turns >= maxTurns) {
+    incrementGameStats();
     setTimeout(() => {
       updateGameMessage(
         `<span>Game Over! You ran out of turns. Found ${matchedPairs} pairs.</span>`
@@ -181,6 +205,13 @@ function openWelcomeDialog() {
   });
 }
 
+function handleGameStatsButton() {
+  $("#game-stats-button").on("click", () => {
+    const dialog = document.getElementById("game-stats");
+    dialog.showModal();
+  });
+}
+
 $(document).ready(() => {
   createGameBoard();
   handleReplayButton();
@@ -190,4 +221,6 @@ $(document).ready(() => {
 
   // openDialog();
   openWelcomeDialog();
+  updateGameStats();
+  handleGameStatsButton();
 });
