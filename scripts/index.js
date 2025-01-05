@@ -97,7 +97,7 @@ function handleDialog() {
 }
 
 function handleReplayButton() {
-  $(".replay-button").on("click", () => {
+  $("#replay-button").on("click", () => {
     resetGame();
     document.getElementById("game-over-dialog").close();
   });
@@ -169,6 +169,17 @@ function openDialog() {
   dialog.showModal();
 }
 
+function openWelcomeDialog() {
+  const dialog = document.getElementById("welcome-dialog");
+  dialog.showModal();
+
+  $("#turns-left").text(maxTurns);
+  $("#pairs-left").text(gameImageCount);
+  $("#start-button").on("click", () => {
+    dialog.close();
+  });
+}
+
 $(document).ready(() => {
   createGameBoard();
   handleReplayButton();
@@ -177,4 +188,5 @@ $(document).ready(() => {
   );
 
   // openDialog();
+  openWelcomeDialog();
 });

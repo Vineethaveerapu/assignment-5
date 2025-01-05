@@ -15,10 +15,26 @@
         <div class="game-board"></div>
         <div class="game-message"></div>
       </section>
+
+      <!-- Welcome Modal -->
+      <dialog id="welcome-dialog">
+        <h2>Welcome to Memory Game!</h2>
+        <p>
+          Match pairs of images to win the game. Click the start button to
+          begin.
+        </p>
+        <p>
+          You have <span id="turns-left">-</span> turns to match all the
+          <span id="pairs-left">-</span> pairs. Good luck!
+        </p>
+        <button type="button" id="start-button">Start Game</button>
+      </dialog>
+
+      <!-- game over dialog -->
       <dialog id="game-over-dialog">
         <div class="game-message"></div>
         <div class="game-controls">
-          <button class="replay-button">Replay Game</button>
+          <button id="replay-button" type="button">Replay Game</button>
         </div>
       </dialog>
     </main>
